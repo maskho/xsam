@@ -11,63 +11,63 @@
 	const isInactive = writable(false);
 	let inactivityTimeout;
 
-	export const useMousePosition = () => {
-		let x = $state(0);
-		let y = $state(0);
+	// export const useMousePosition = () => {
+	// 	let x = $state(0);
+	// 	let y = $state(0);
 
-		const updateMousePosition = (event) => {
-			x = event.clientX;
-			y = event.clientY;
-			resetInactivityTimer();
-		};
+	// 	const updateMousePosition = (event) => {
+	// 		x = event.clientX;
+	// 		y = event.clientY;
+	// 		resetInactivityTimer();
+	// 	};
 
-		const resetInactivityTimer = () => {
-			clearTimeout(inactivityTimeout);
-			isInactive.set(false);
-			inactivityTimeout = setTimeout(() => {
-				isInactive.set(true);
-			}, 10000);
-		};
+	// 	const resetInactivityTimer = () => {
+	// 		clearTimeout(inactivityTimeout);
+	// 		isInactive.set(false);
+	// 		inactivityTimeout = setTimeout(() => {
+	// 			isInactive.set(true);
+	// 		}, 10000);
+	// 	};
 
-		$effect(() => {
-			window.addEventListener('mousemove', updateMousePosition);
-			window.addEventListener('keydown', resetInactivityTimer);
-			resetInactivityTimer();
-			return () => {
-				window.removeEventListener('mousemove', updateMousePosition);
-				window.removeEventListener('keydown', resetInactivityTimer);
-				clearTimeout(inactivityTimeout);
-			};
-		});
+	// 	$effect(() => {
+	// 		window.addEventListener('mousemove', updateMousePosition);
+	// 		window.addEventListener('keydown', resetInactivityTimer);
+	// 		resetInactivityTimer();
+	// 		return () => {
+	// 			window.removeEventListener('mousemove', updateMousePosition);
+	// 			window.removeEventListener('keydown', resetInactivityTimer);
+	// 			clearTimeout(inactivityTimeout);
+	// 		};
+	// 	});
 
-		return {
-			get x() {
-				return x;
-			},
-			get y() {
-				return y;
-			}
-		};
-	};
+	// 	return {
+	// 		get x() {
+	// 			return x;
+	// 		},
+	// 		get y() {
+	// 			return y;
+	// 		}
+	// 	};
+	// };
 
-	const mouse = useMousePosition();
+	// const mouse = useMousePosition();
 
-	$effect(() => {
-		if (!container) return;
-		const rect = container.getBoundingClientRect();
-		const padding = 32;
+	// $effect(() => {
+	// 	if (!container) return;
+	// 	const rect = container.getBoundingClientRect();
+	// 	const padding = 32;
 
-		if (
-			mouse.x < rect.left + padding ||
-			mouse.x > rect.right - padding ||
-			mouse.y < rect.top + padding ||
-			mouse.y > rect.bottom - padding
-		) {
-			isOutside.set(true);
-		} else {
-			isOutside.set(false);
-		}
-	});
+	// 	if (
+	// 		mouse.x < rect.left + padding ||
+	// 		mouse.x > rect.right - padding ||
+	// 		mouse.y < rect.top + padding ||
+	// 		mouse.y > rect.bottom - padding
+	// 	) {
+	// 		isOutside.set(true);
+	// 	} else {
+	// 		isOutside.set(false);
+	// 	}
+	// });
 </script>
 
 <ModeWatcher />

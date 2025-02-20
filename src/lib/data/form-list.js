@@ -1,5 +1,5 @@
 export default [
-	{ id: '123', title: 'New Form', slug: 'new' },
+	{ id: '123', title: 'Test', slug: 'test', submission: 0 },
 	{
 		id: '345',
 		title: 'Form 1 With a long title soo long that it will be cut off',
