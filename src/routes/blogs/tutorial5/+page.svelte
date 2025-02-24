@@ -2,7 +2,6 @@
 	import { Button } from '$lib/components/ui/button';
 
 	let data = $props();
-	$inspect(data);
 
 	let username = $state('');
 	let isEditMode = $state(false);

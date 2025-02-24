@@ -19,6 +19,9 @@
 <p>{command}</p>
 <p>{congratulation}</p>
 
+<a href="/blogs/article-1">Article 1</a>
+<a href="/blogs/article-2">Article 2</a>
+
 <style>
 	p {
 		color: red;
