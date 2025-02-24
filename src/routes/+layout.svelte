@@ -3,12 +3,11 @@
 	import '../app.css';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 
 	let { children } = $props();
 	let container;
-	const isOutside = writable(false);
-	const isInactive = writable(false);
+	let isOutside = $state(false);
+	let isInactive = $state(false);
 	let inactivityTimeout;
 
 	// export const useMousePosition = () => {
@@ -73,7 +72,7 @@
 <ModeWatcher />
 <div
 	bind:this={container}
-	class={`min-h-screen  bg-grid-pattern bg-grid-small  md:bg-grid-large ${$isOutside || $isInactive ? 'bg-red-700' : 'bg-white dark:bg-secondaryBlack'}`}
+	class={`min-h-screen  bg-grid-pattern bg-grid-small  md:bg-grid-large ${isOutside || isInactive ? 'bg-red-700' : 'bg-white dark:bg-secondaryBlack'}`}
 >
 	<ThemeSwitcher />
 	{@render children()}
