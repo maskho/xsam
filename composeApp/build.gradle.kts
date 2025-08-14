@@ -67,6 +67,8 @@ kotlin {
 
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.coil)
+
+            implementation(libs.material.icons.extended)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -78,9 +80,6 @@ kotlin {
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
-        }
-        dependencies {
-            ksp(libs.androidx.room.compiler)
         }
     }
 }
@@ -115,6 +114,10 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+
+    listOf("kspAndroid", "kspJvm", "kspIosX64", "kspIosArm64", "kspIosSimulatorArm64").forEach { target ->
+        add(target, libs.androidx.room.compiler)
+    }
 }
 
 compose.desktop {
