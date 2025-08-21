@@ -62,6 +62,11 @@ class BookListViewModel(
                     it.copy(selectedTabIndex = action.index)
                 }
             }
+            BookListAction.OnLoginClick -> {
+            }
+
+            BookListAction.OnLogoutClick -> {
+            }
         }
     }
 

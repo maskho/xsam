@@ -53,6 +53,7 @@ private fun BookListScreenPreview() {
         state = BookListState(
             searchResults = books
         ),
+        isLoggedIn = false,
         onAction = {}
     )
 }

@@ -1,30 +1,16 @@
 package dev.vvoc.xsam.book.presentation.book_list
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,12 +18,15 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.auth
 import dev.vvoc.xsam.book.domain.Book
 import dev.vvoc.xsam.book.presentation.book_list.components.BookList
 import dev.vvoc.xsam.book.presentation.book_list.components.BookSearchBar
 import dev.vvoc.xsam.core.presentation.DarkBlue
 import dev.vvoc.xsam.core.presentation.DesertWhite
 import dev.vvoc.xsam.core.presentation.SandYellow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import xsam.composeapp.generated.resources.Res
@@ -49,15 +38,27 @@ import xsam.composeapp.generated.resources.search_results
 @Composable
 fun BookListScreenRoot(
     viewModel: BookListViewModel = koinViewModel(),
+    isLoggedIn: Boolean,
     onBookClick: (Book) -> Unit,
+    onLoginClick: () -> Unit,
+    onLogoutClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
 
     BookListScreen(
         state = state,
+        isLoggedIn = isLoggedIn,
         onAction = { action ->
             when (action) {
                 is BookListAction.OnBookClick -> onBookClick(action.book)
+                is BookListAction.OnLoginClick -> onLoginClick()
+                is BookListAction.OnLogoutClick -> {
+                    coroutineScope.launch {
+                        Firebase.auth.signOut()
+                        onLogoutClick()
+                    }
+                }
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -65,9 +66,11 @@ fun BookListScreenRoot(
     )
 }
 
+
 @Composable
 fun BookListScreen(
     state: BookListState,
+    isLoggedIn: Boolean,
     onAction: (BookListAction) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -95,19 +98,76 @@ fun BookListScreen(
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BookSearchBar(
-            searchQuery = state.searchQuery,
-            onSearchQueryChange = {
-                onAction(BookListAction.OnSearchQueryChange(it))
-            },
-            onImeSearch = {
-                keyboardController?.hide()
-            },
+        // 🔎 Search bar + 👤 account button
+        Row(
             modifier = Modifier
                 .widthIn(max = 400.dp)
                 .fillMaxWidth()
-                .padding(16.dp)
-        )
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BookSearchBar(
+                searchQuery = state.searchQuery,
+                onSearchQueryChange = {
+                    onAction(BookListAction.OnSearchQueryChange(it))
+                },
+                onImeSearch = {
+                    keyboardController?.hide()
+                },
+                modifier = Modifier.weight(1f)
+            )
+
+            var expanded by remember { mutableStateOf(false) }
+            val user = Firebase.auth.currentUser
+
+            Box {
+                IconButton(
+                    onClick = { expanded = true },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "User Account",
+                        tint = Color.White,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    if (isLoggedIn && user != null) {
+                        // UID + Email
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            Text("Email: ${user.email ?: "-"}", style = MaterialTheme.typography.bodySmall)
+                            Text("UID: ${user.uid}", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Divider()
+
+                        // Logout
+                        DropdownMenuItem(
+                            text = { Text("Logout") },
+                            onClick = {
+                                expanded = false
+                                onAction(BookListAction.OnLogoutClick)
+                            }
+                        )
+                    } else {
+                        // Login
+                        DropdownMenuItem(
+                            text = { Text("Login") },
+                            onClick = {
+                                expanded = false
+                                onAction(BookListAction.OnLoginClick)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        // 📚 Tabs + Book lists
         Surface(
             modifier = Modifier
                 .weight(1f)
@@ -147,8 +207,7 @@ fun BookListScreen(
                     ) {
                         Text(
                             text = stringResource(Res.string.search_results),
-                            modifier = Modifier
-                                .padding(vertical = 12.dp)
+                            modifier = Modifier.padding(vertical = 12.dp)
                         )
                     }
                     Tab(
@@ -162,12 +221,13 @@ fun BookListScreen(
                     ) {
                         Text(
                             text = stringResource(Res.string.favorites),
-                            modifier = Modifier
-                                .padding(vertical = 12.dp)
+                            modifier = Modifier.padding(vertical = 12.dp)
                         )
                     }
                 }
+
                 Spacer(modifier = Modifier.height(4.dp))
+
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier
@@ -175,8 +235,7 @@ fun BookListScreen(
                         .weight(1f)
                 ) { pageIndex ->
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         when (pageIndex) {
