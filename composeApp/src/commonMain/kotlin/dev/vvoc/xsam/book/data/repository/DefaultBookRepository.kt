@@ -52,7 +52,7 @@ class DefaultBookRepository(
         return try {
             favoriteBookDao.upsert(book.toBookEntity())
             Result.Success(Unit)
-        } catch (e: SQLiteException) {
+        } catch (_: SQLiteException) {
             Result.Error(DataError.Local.DISK_FULL)
         }
     }
