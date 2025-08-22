@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    id("com.google.gms.google-services")
 }
 
 kotlin {
@@ -46,6 +47,8 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
+
+            implementation("com.google.android.gms:play-services-auth:21.4.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -69,6 +72,10 @@ kotlin {
             implementation(libs.bundles.coil)
 
             implementation(libs.material.icons.extended)
+
+            implementation("dev.gitlive:firebase-auth:1.11.1")
+            implementation("dev.gitlive:firebase-app:2.1.0")
+            implementation("dev.gitlive:firebase-firestore:2.1.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -77,6 +84,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.firebase.admin)
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "265642251710",
+    "project_id": "auth-test-40c7b",
+    "storage_bucket": "auth-test-40c7b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265642251710:android:8bb9381bc3272a456d95ef",
+        "android_client_info": {
+          "package_name": "dev.vvoc.xsam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyaew1J1qW9KQtWFglUbc5upxuRFHYVQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
