@@ -47,10 +47,7 @@ fun App() {
                     startDestination = Route.BookList
                 ) {
                     // ===== BookList =====
-                    composable<Route.BookList>(
-                        exitTransition = { slideOutHorizontally() },
-                        popEnterTransition = { slideInHorizontally() }
-                    ) {
+                    composable<Route.BookList>{
                         val viewModel = koinViewModel<BookListViewModel>()
                         val selectedBookViewModel =
                             it.sharedKoinViewModel<SelectedBookViewModel>(navController)
@@ -105,7 +102,7 @@ fun App() {
                     }
 
                     // ===== Login =====
-                    composable<Route.Login> {
+                    composable<Route.Login>{
                         val coroutineScopeScreen = rememberCoroutineScope()
                         var isLoading by remember { mutableStateOf(false) }
                         val authState by authViewModel.authState.collectAsStateWithLifecycle()
